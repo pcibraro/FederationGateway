@@ -1,0 +1,8 @@
+﻿@model FederationGateway.Models.WsFedSignOutResponseModel
+
+<p>You are now signed out</p>
+
+@foreach(var url in Model.LogoutUrls)
+{
+    <iframe style="visibility:hidden;width:1px;height:1px" src="@url"></iframe>
+}

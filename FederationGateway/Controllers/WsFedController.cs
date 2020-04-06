@@ -96,7 +96,26 @@ namespace FederationGateway.Controllers
             } 
             else if(message.IsSignOutMessage)
             {
-                return Ok();
+                var endpoints = new List<string>();
+
+                var realms = _sessionManager.GetRealms();
+                foreach(var realm in realms)
+                {
+                    var endpoint = await _relyingPartyStore.FindRelyingPartyByRealm(realm);
+                    if(endpoint.LogoutUrl != null)
+                        endpoints.Add(endpoint.LogoutUrl);
+                }
+
+                var model = new WsFedSignOutResponseModel
+                {
+                    LogoutUrls = endpoints
+                };
+
+                _sessionManager.ClearEndpoints();
+
+                await this.HttpContext.SignOutAsync();
+
+                return View("Logout", model);
             }
 
             return BadRequest("Invalid Ws-Fed Request Message");
