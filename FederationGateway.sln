@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FederationGateway", "Federa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FederationGateway.Core", "FederationGateway.Core\FederationGateway.Core.csproj", "{440AE72F-E9D8-4056-A19B-EDA22358AA5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FederationGateway.Tests", "FederationGateway.Tests\FederationGateway.Tests.csproj", "{8AC7B1DF-8ED0-4A7E-9BD6-ABE892462FC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FederationGateway.Tests", "FederationGateway.Tests\FederationGateway.Tests.csproj", "{8AC7B1DF-8ED0-4A7E-9BD6-ABE892462FC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FederationGateway.SampleWebApp", "FederationGateway.SampleWebApp\FederationGateway.SampleWebApp.csproj", "{D6F5D70A-4CB0-48C4-A200-CB5CBFDA03D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{8AC7B1DF-8ED0-4A7E-9BD6-ABE892462FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AC7B1DF-8ED0-4A7E-9BD6-ABE892462FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AC7B1DF-8ED0-4A7E-9BD6-ABE892462FC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6F5D70A-4CB0-48C4-A200-CB5CBFDA03D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6F5D70A-4CB0-48C4-A200-CB5CBFDA03D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6F5D70A-4CB0-48C4-A200-CB5CBFDA03D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6F5D70A-4CB0-48C4-A200-CB5CBFDA03D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

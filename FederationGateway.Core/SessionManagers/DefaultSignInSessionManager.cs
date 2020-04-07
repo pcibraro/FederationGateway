@@ -20,7 +20,7 @@ namespace FederationGateway.Core.SessionManagers
         public void AddRealm(string realm)
         {
             var realms = ReadCookie();
-            if (!realm.Contains(realm))
+            if (!realms.Contains(realm))
             {
                 realms.Add(realm);
                 WriteCookie(realms);

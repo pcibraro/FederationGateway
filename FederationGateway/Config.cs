@@ -17,8 +17,8 @@ namespace FederationGateway
                     new RelyingParty
                     {
                         Realm = "urn:test",
-                        ReplyUrl = "https://localhost",
-                        LogoutUrl = "https://localhost"
+                        ReplyUrl = "https://localhost:44384/wsfed",
+                        LogoutUrl = "https://localhost:44384/wsfed"
                     }
                 };
             }

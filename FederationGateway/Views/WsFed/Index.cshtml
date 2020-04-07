@@ -1,6 +1,7 @@
 ﻿@model FederationGateway.Models.WsFedSignInResponseModel
 
 <form method="post" name="hiddenform" action="@Model.Action">
+    <input type="hidden" name="wa" value="wsignin1.0" />
     <input type="hidden" name="wresult" value="@Model.WResult" />
     <input type="hidden" name="wctx" value="@Model.Wctx" />
 

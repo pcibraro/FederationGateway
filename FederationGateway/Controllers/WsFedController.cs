@@ -40,11 +40,14 @@ namespace FederationGateway.Controllers
             _serializer = serializer;
         }
 
-        public async Task Login()
+        public async Task Login(string qs)
         {
             if (!User.Identity.IsAuthenticated)
             {
-                await this.HttpContext.ChallengeAsync();
+                await this.HttpContext.ChallengeAsync(new AuthenticationProperties
+                {
+                    RedirectUri = Url.Action("Index", "WsFed", null, "https") + "/" + qs
+                }) ;
             }
         }
 
@@ -52,7 +55,7 @@ namespace FederationGateway.Controllers
         {
             if(!User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Login");
+                return RedirectToAction("Login", new { qs = this.Request.QueryString });
             }
 
             _logger.LogInformation("Received Ws-Fed Request. {0}", this.Request.QueryString.ToUriComponent());
