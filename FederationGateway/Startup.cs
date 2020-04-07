@@ -22,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using FederationGateway.Core.Configuration;
+using FederationGateway.Core.Middleware;
 
 namespace FederationGateway
 {
@@ -86,6 +87,8 @@ namespace FederationGateway
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseMiddleware<P3PHeaderMiddleware>();
 
             app.UseCookiePolicy(new CookiePolicyOptions
             {
