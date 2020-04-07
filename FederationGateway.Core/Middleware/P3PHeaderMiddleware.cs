@@ -17,9 +17,11 @@ namespace FederationGateway.Core.Middleware
 
         public async Task Invoke(HttpContext context)
         {
+            context.Response.Headers.Add("P3P", "CP=\"NID DSP ALL COR\"");
+
             await _next(context);
 
-            context.Response.Headers.Add("P3P", "CP=\"NID DSP ALL COR\"");
+            
         }
     }
 }
