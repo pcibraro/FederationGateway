@@ -9,6 +9,8 @@ using FederationGateway.SampleWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.WsFederation;
 
 namespace FederationGateway.SampleWebApp.Controllers
 {
@@ -33,11 +35,14 @@ namespace FederationGateway.SampleWebApp.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> SignOut()
+        public async Task SignOut()
         {
-            await this.HttpContext.SignOutAsync();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(WsFederationDefaults.AuthenticationScheme);
 
-            return RedirectToAction("Index");
+            //await this.HttpContext.SignOutAsync();
+
+            //return RedirectToAction("Index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

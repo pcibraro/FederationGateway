@@ -105,13 +105,23 @@ namespace FederationGateway.Controllers
                 foreach(var realm in realms)
                 {
                     var endpoint = await _relyingPartyStore.FindRelyingPartyByRealm(realm);
-                    if(endpoint.LogoutUrl != null)
-                        endpoints.Add(endpoint.LogoutUrl);
+                    if (endpoint.LogoutUrl != null)
+                    {
+                        var logoutUrl = endpoint.LogoutUrl;
+
+                        if (!endpoint.LogoutUrl.EndsWith("/"))
+                            logoutUrl += "/";
+
+                        logoutUrl += "?wa=wsignoutcleanup1.0";
+
+                        endpoints.Add(logoutUrl);
+                    }
                 }
 
                 var model = new WsFedSignOutResponseModel
                 {
-                    LogoutUrls = endpoints
+                    LogoutUrls = endpoints,
+                    ReplyTo = message.Wreply
                 };
 
                 _sessionManager.ClearEndpoints();

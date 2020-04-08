@@ -6,3 +6,10 @@
 {
     <iframe style="visibility:hidden;width:1px;height:1px" src="@url"></iframe>
 }
+
+@if (Model.ReplyTo != null)
+{
+    <script type="text/javascript">
+        window.location = "@Model.ReplyTo";
+    </script>
+}
