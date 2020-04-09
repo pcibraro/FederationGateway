@@ -55,7 +55,7 @@ namespace FederationGateway.Core.ResponseProcessing
 
             var response = new SignInResponse
             {
-                AppliesTo = new Uri(request.Realm),
+                AppliesTo = request.Realm,
                 Token = token
             };
 

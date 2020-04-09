@@ -24,6 +24,7 @@ using Microsoft.Extensions.Options;
 using FederationGateway.Core.Configuration;
 using FederationGateway.Core.Middleware;
 using System.Web;
+using FederationGateway.Core.Messaging.SamlP;
 
 namespace FederationGateway
 {
@@ -62,6 +63,7 @@ namespace FederationGateway
 
             services.AddSingleton<WsFederationMetadataSerializer>();
             services.AddSingleton<WsTrustSerializer>();
+            services.AddSingleton<SamlResponseSerializer>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IKeyMaterialService>(new DefaultKeyMaterialService(certificate));
             services.AddSingleton<IRelyingPartyStore>(new InMemoryRelyingPartyStore(Config.RelyingParties));

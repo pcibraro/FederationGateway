@@ -11,6 +11,7 @@ using FederationGateway.Core.Messaging.SamlP;
 using FederationGateway.Core.RelyingParties;
 using FederationGateway.Core.ResponseProcessing;
 using FederationGateway.Core.SessionManagers;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -41,9 +42,20 @@ namespace FederationGateway.Controllers
             _options = options;
         }
 
+        public async Task Login(string qs)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                await this.HttpContext.ChallengeAsync(new AuthenticationProperties
+                {
+                    RedirectUri = Url.Action("Index", "Saml20", null, "https") + "/" + qs
+                });
+            }
+        }
+
         public async Task<IActionResult> Index()
         {
-            if(Request.Method != "POST" || Request.Method != "GET")
+            if(!(Request.Method == "POST" || Request.Method == "GET"))
             {
                 return StatusCode((int)HttpStatusCode.MethodNotAllowed);
             }

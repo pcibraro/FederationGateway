@@ -7,7 +7,7 @@ namespace FederationGateway.Core.ResponseProcessing
 {
     public class SignInResponse
     {
-        public Uri AppliesTo { get; set; }
+        public string AppliesTo { get; set; }
 
         public Saml2SecurityToken Token { get; set; }
     }
