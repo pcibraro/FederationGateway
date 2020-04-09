@@ -69,7 +69,7 @@ namespace FederationGateway.Tests
                 _options
                 );
 
-            var response = await responseGenerator.GenerateWsSignInResponse(new Core.ResponseProcessing.SignInRequest
+            var response = await responseGenerator.GenerateSignInResponse(new Core.ResponseProcessing.SignInRequest
             {
                 Realm = "urn:test",
                 User = new ClaimsPrincipal(new List<ClaimsIdentity>
@@ -84,7 +84,7 @@ namespace FederationGateway.Tests
                 }            
             });
 
-            Assert.NotNull(response.RequestedSecurityToken);
+            Assert.NotNull(response.Token);
         }
 
         [Fact]
@@ -97,7 +97,7 @@ namespace FederationGateway.Tests
                 _options
                 );
 
-            var response = await responseGenerator.GenerateWsSignInResponse(new Core.ResponseProcessing.SignInRequest
+            var response = await responseGenerator.GenerateSignInResponse(new Core.ResponseProcessing.SignInRequest
             {
                 Realm = "urn:test",
                 User = new ClaimsPrincipal(new List<ClaimsIdentity>
@@ -123,7 +123,7 @@ namespace FederationGateway.Tests
                 Created = DateTime.Now
             };
             wsTrust.AppliesTo = new Uri("urn:test");
-            wsTrust.RequestedSecurityToken = (Saml2SecurityToken)response.RequestedSecurityToken;
+            wsTrust.RequestedSecurityToken = (Saml2SecurityToken)response.Token;
 
             serializer.Serialize(xmlWriter, wsTrust);
 

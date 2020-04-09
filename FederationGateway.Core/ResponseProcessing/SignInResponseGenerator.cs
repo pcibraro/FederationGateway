@@ -41,7 +41,7 @@ namespace FederationGateway.Core.ResponseProcessing
             _options = options.Value;
         }
 
-        public async Task<WsTrustRequestSecurityTokenResponse> GenerateWsSignInResponse(SignInRequest request)
+        public async Task<SignInResponse> GenerateSignInResponse(SignInRequest request)
         {
             _logger.LogDebug("Creating WS-Federation signin response");
 
@@ -53,15 +53,10 @@ namespace FederationGateway.Core.ResponseProcessing
             // create token for user
             var token = await CreateSecurityTokenAsync(request, rp, outgoingSubject);
 
-            var response = new WsTrustRequestSecurityTokenResponse
+            var response = new SignInResponse
             {
                 AppliesTo = new Uri(request.Realm),
-                LifeTime = new WsTrustLifetime
-                {
-                    Created = token.ValidFrom,
-                    Expires = token.ValidTo
-                },
-                RequestedSecurityToken = (Saml2SecurityToken)token
+                Token = token
             };
 
             return response;
@@ -74,7 +69,7 @@ namespace FederationGateway.Core.ResponseProcessing
             return profile;
         }
 
-        private async Task<SecurityToken> CreateSecurityTokenAsync(SignInRequest request, RelyingParty rp, ClaimsIdentity outgoingSubject)
+        private async Task<Saml2SecurityToken> CreateSecurityTokenAsync(SignInRequest request, RelyingParty rp, ClaimsIdentity outgoingSubject)
         {
             var now = DateTime.Now;
 
@@ -146,16 +141,6 @@ namespace FederationGateway.Core.ResponseProcessing
             return token;
         }
 
-        private SignInResult CreateResponse(SignInRequest request, RelyingParty rp, SecurityToken token)
-        {
-            var result = new SignInResult
-            {
-                Token = token,
-                ReplyUrl = rp.ReplyUrl,
-                Realm = rp.Realm
-            };
-
-            return result;
-        }
+       
     }
 }

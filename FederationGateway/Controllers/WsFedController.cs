@@ -94,12 +94,23 @@ namespace FederationGateway.Controllers
                 Parameters = message.Parameters
             };
 
-            var response = await _responseGenerator.GenerateWsSignInResponse(request);
+            var response = await _responseGenerator.GenerateSignInResponse(request);
+
+            var wsTrustResponse = new WsTrustRequestSecurityTokenResponse
+            {
+                AppliesTo = new Uri(request.Realm),
+                LifeTime = new WsTrustLifetime
+                {
+                    Created = response.Token.ValidFrom,
+                    Expires = response.Token.ValidTo
+                },
+                RequestedSecurityToken = response.Token
+            };
 
             var sb = new StringBuilder();
             using (var xmlWriter = XmlWriter.Create(new StringWriter(sb)))
             {
-                _serializer.Serialize(xmlWriter, response);
+                _serializer.Serialize(xmlWriter, wsTrustResponse);
             }
 
             _sessionManager.AddRealm(message.Wtrealm);
