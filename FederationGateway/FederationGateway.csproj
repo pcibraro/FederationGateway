@@ -17,4 +17,8 @@
     <ProjectReference Include="..\FederationGateway.Core\FederationGateway.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>

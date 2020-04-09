@@ -9,13 +9,13 @@ using FederationGateway.Core;
 using FederationGateway.Core.Messaging.WsTrust;
 using FederationGateway.Core.RelyingParties;
 using FederationGateway.Core.SessionManagers;
-using FederationGateway.Models;
 using FederationGateway.Core.ResponseProcessing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.WsFederation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication;
+using System.Net;
 
 namespace FederationGateway.Controllers
 {
@@ -59,79 +59,112 @@ namespace FederationGateway.Controllers
             }
 
             _logger.LogInformation("Received Ws-Fed Request. {0}", this.Request.QueryString.ToUriComponent());
-           
+            
             var message = WsFederationMessage.FromQueryString(this.Request.QueryString.ToUriComponent());
 
-            if(message.IsSignInMessage)
+            if (message.IsSignInMessage)
             {
                 var relyingParty = await _relyingPartyStore.FindRelyingPartyByRealm(message.Wtrealm);
 
-                if(relyingParty == null)
+                if (relyingParty == null)
                 {
                     return BadRequest($"The realm {message.Wtrealm} is not registered");
                 }
 
-                var request = new SignInRequest
-                {
-                    User = this.User,
-                    Realm = message.Wtrealm,
-                    Parameters = message.Parameters
-                };
+                var output = await HandleSignIn(message, relyingParty.ReplyUrl);
 
-                var response = await _responseGenerator.GenerateWsSignInResponse(request);
-
-                var sb = new StringBuilder();
-                using (var xmlWriter = XmlWriter.Create(new StringWriter(sb)))
-                {
-                    _serializer.Serialize(xmlWriter, response); 
-                }
-
-                var model = new WsFedSignInResponseModel
-                {
-                    Action = relyingParty.ReplyUrl,
-                    WResult = sb.ToString(),
-                    Wctx = message.Wctx
-                };
-
-                _sessionManager.AddRealm(message.Wtrealm);
-
-                return View(model);
+                return Content(output, "text/html");
             } 
             else if(message.IsSignOutMessage)
             {
-                var endpoints = new List<string>();
+                var output = await HandleSignOut(message);
 
-                var realms = _sessionManager.GetRealms();
-                foreach(var realm in realms)
-                {
-                    var endpoint = await _relyingPartyStore.FindRelyingPartyByRealm(realm);
-                    if (endpoint.LogoutUrl != null)
-                    {
-                        var logoutUrl = endpoint.LogoutUrl;
-
-                        if (!endpoint.LogoutUrl.EndsWith("/"))
-                            logoutUrl += "/";
-
-                        logoutUrl += "?wa=wsignoutcleanup1.0";
-
-                        endpoints.Add(logoutUrl);
-                    }
-                }
-
-                var model = new WsFedSignOutResponseModel
-                {
-                    LogoutUrls = endpoints,
-                    ReplyTo = message.Wreply
-                };
-
-                _sessionManager.ClearEndpoints();
-
-                await this.HttpContext.SignOutAsync();
-
-                return View("Logout", model);
+                return Content(output, "text/html");
             }
 
             return BadRequest("Invalid Ws-Fed Request Message");
+        }
+
+        private async Task<string> HandleSignIn(WsFederationMessage message, string replyUrl)
+        {
+            var request = new SignInRequest
+            {
+                User = this.User,
+                Realm = message.Wtrealm,
+                Parameters = message.Parameters
+            };
+
+            var response = await _responseGenerator.GenerateWsSignInResponse(request);
+
+            var sb = new StringBuilder();
+            using (var xmlWriter = XmlWriter.Create(new StringWriter(sb)))
+            {
+                _serializer.Serialize(xmlWriter, response);
+            }
+
+            _sessionManager.AddRealm(message.Wtrealm);
+
+            var wsResponse = new WsFederationMessage();
+            wsResponse.Wa = "wsignin1.0";
+            wsResponse.Wresult = sb.ToString();
+            wsResponse.Wctx = message.Wctx;
+            wsResponse.IssuerAddress = replyUrl;
+
+            var form = wsResponse.BuildFormPost();
+
+            return form;
+        }
+
+        private async Task<string> HandleSignOut(WsFederationMessage message)
+        {
+            var endpoints = new List<string>();
+
+            var realms = _sessionManager.GetRealms();
+            foreach (var realm in realms)
+            {
+                var endpoint = await _relyingPartyStore.FindRelyingPartyByRealm(realm);
+                if (endpoint.LogoutUrl != null)
+                {
+                    var logoutUrl = endpoint.LogoutUrl;
+
+                    if (!endpoint.LogoutUrl.EndsWith("/"))
+                        logoutUrl += "/";
+
+                    logoutUrl += "?wa=wsignoutcleanup1.0";
+
+                    endpoints.Add(logoutUrl);
+                }
+            }
+
+            _sessionManager.ClearEndpoints();
+
+            await this.HttpContext.SignOutAsync();
+
+            var form = BuildLogoutFormPost(endpoints, message.Wreply);
+
+            return form;
+        }
+        
+        private string BuildLogoutFormPost(IEnumerable<string> endpoints, string replyUrl)
+        {
+            StringBuilder strBuilder = new StringBuilder();
+            strBuilder.Append("<html><head><title>signout</title></head><body>");
+            strBuilder.Append("<p>You are now signed out</p>");
+            foreach(var endpoint in endpoints)
+            {
+                strBuilder.Append(string.Format("<iframe style='visibility: hidden; width: 1px; height: 1px' src='{0}'></iframe>",
+                    WebUtility.HtmlEncode(endpoint)));
+            }
+
+            if(!string.IsNullOrWhiteSpace(replyUrl))
+            {
+                strBuilder.Append(string.Format("<script type='text/javascript'>window.location = '{0}'</ script>", 
+                    WebUtility.HtmlEncode(replyUrl)));
+            }
+
+            strBuilder.Append("</body></html>");
+            
+            return strBuilder.ToString();
         }
     }
 }
