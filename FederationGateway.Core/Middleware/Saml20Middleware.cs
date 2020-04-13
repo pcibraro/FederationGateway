@@ -65,21 +65,6 @@ namespace FederationGateway.Core.Middleware
 
                 _logger.LogInformation("Received SAML 2.0 Request. {0}", context.Request.QueryString.ToUriComponent());
 
-                if (!context.User.Identity.IsAuthenticated)
-                {
-                    _logger.LogInformation("User is not authenticated. Redirecting to authentication provider");
-
-                    var qs = context.Request.QueryString;
-                    var url = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{segment}/{context.Request.QueryString}";
-
-                    await context.ChallengeAsync(new AuthenticationProperties
-                    {
-                        RedirectUri = url
-                    });
-
-                    return;
-                }
-
                 if (!context.Request.Query.ContainsKey("SAMLRequest"))
                 {
                     _logger.LogWarning("Invalid message. It does not contain SAMLRequest");
@@ -89,6 +74,45 @@ namespace FederationGateway.Core.Middleware
 
                     return;
                 }
+
+                if (!context.User.Identity.IsAuthenticated)
+                {
+                    _logger.LogInformation("User is not authenticated. Redirecting to authentication provider");
+
+                    if (context.Request.Method.Equals("GET", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var qs = context.Request.QueryString;
+                        var url = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{segment}/{context.Request.QueryString}";
+
+                        await context.ChallengeAsync(new AuthenticationProperties
+                        {
+                            RedirectUri = url
+                        });
+
+                        return;
+                    }
+                    else
+                    {
+                        // Converts the POST Request into a GET so the message can be passed as context to the IDP and 
+                        // it can be recovered after the user is authenticated
+                        var compressedRequest = SamlRequestMessage.CompressRequest(context.Request.Query["SAMLRequest"]);
+                        var qs = string.Join("&", context.Request.Query.Where(q => q.Key != "SAMLRequest")
+                            .Select(q => q.Key + "=" + q.Value[0]));
+
+                        qs = "SAMLRequest=" + compressedRequest + "&" + qs;
+
+                        var url = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{segment}/{qs}";
+
+                        await context.ChallengeAsync(new AuthenticationProperties
+                        {
+                            RedirectUri = url
+                        });
+
+                        return;
+
+                    }
+                }
+
 
                 var samlRequest = context.Request.Query["SAMLRequest"];
 

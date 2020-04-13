@@ -55,6 +55,22 @@ namespace FederationGateway.Core.Messaging.SamlP
             return ParseFromDecodedRequest(decoded);
         }
 
+        public static string CompressRequest(string request)
+        {
+            if (string.IsNullOrWhiteSpace(request)) throw new ArgumentNullException(nameof(request));
+
+            var inputStream = new MemoryStream(Convert.FromBase64String(request));
+            
+            using (var compressStream = new MemoryStream())
+            using (var compressor = new DeflateStream(compressStream, CompressionMode.Compress))
+            {
+                inputStream.CopyTo(compressor);
+                compressor.Close();
+
+                return Convert.ToBase64String(compressStream.ToArray());
+            }
+        }
+
         private static SamlRequestMessage ParseFromDecodedRequest(string decodedRequest)
         {
             var document = XElement.Parse(decodedRequest);
