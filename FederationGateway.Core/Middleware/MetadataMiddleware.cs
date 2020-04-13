@@ -1,63 +1,77 @@
-﻿using System;
+﻿using FederationGateway.Core.Configuration;
+using FederationGateway.Core.Keys;
+using FederationGateway.Core.Messaging.Metadata;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using FederationGateway.Core.Configuration;
-using FederationGateway.Core.Keys;
-using FederationGateway.Core.Messaging.Metadata;
-using FederationGateway.Core.ResponseProcessing;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
-namespace FederationGateway.Controllers
+namespace FederationGateway.Core.Middleware
 {
-    public class MetadataController : Controller
+    public class MetadataMiddleware
     {
         const string DocumentId = "ebdcbf09-cc15-44a3-93ce-ef2f48418052";
 
-        private readonly ILogger<SignInResponseGenerator> _logger;
+        private readonly RequestDelegate _next;
+        private readonly ILogger<MetadataMiddleware> _logger;
         private readonly IKeyMaterialService _keyService;
         private readonly FederationGatewayOptions _options;
         private readonly WsFederationMetadataSerializer _serializer;
 
-        public MetadataController(
-            ILogger<SignInResponseGenerator> logger,
+        public MetadataMiddleware(RequestDelegate next,
+            ILogger<MetadataMiddleware> logger,
             IKeyMaterialService keyService,
             IOptions<FederationGatewayOptions> options,
             WsFederationMetadataSerializer serializer)
         {
+            _next = next;
             _logger = logger;
             _keyService = keyService;
             _options = options.Value;
             _serializer = serializer;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task Invoke(HttpContext context)
         {
-            var key = ((await _keyService.GetSigningCredentialsAsync()).Key as X509SecurityKey).Certificate;
-
-            var sb = new StringBuilder();
-            using (var xmlWriter = XmlWriter.Create(new StringWriter(sb)))
+            if (context.Request.Path.StartsWithSegments(new PathString("/metadata"), StringComparison.InvariantCultureIgnoreCase))
             {
-                _serializer.Serialize(xmlWriter,
-                    key,
-                    DocumentId,
-                    _options.IssuerName,
-                    Url.Action("Index", "Saml20", new { }, "https"),
-                    Url.Action("Index", "WsFed", new { }, "https"));
+                var samlSegment = (string.IsNullOrWhiteSpace(_options?.Saml?.Endpoint)) ? "/Saml20" : "/" + _options?.Saml?.Endpoint;
+                var wsFedSegment = (string.IsNullOrWhiteSpace(_options?.WsFed?.Endpoint)) ? "/WsFed" : "/" + _options?.WsFed?.Endpoint;
+
+                var samlUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{samlSegment}/";
+                var wsFedUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{wsFedSegment}/";
+
+                var key = ((await _keyService.GetSigningCredentialsAsync()).Key as X509SecurityKey).Certificate;
+
+                var sb = new StringBuilder();
+                using (var xmlWriter = XmlWriter.Create(new StringWriter(sb)))
+                {
+                    _serializer.Serialize(xmlWriter,
+                        key,
+                        DocumentId,
+                        _options.IssuerName,
+                        samlUrl,
+                        wsFedUrl);
+                }
+
+                var xml = sb.ToString();
+                var signedXml = SignXml(xml, key);
+
+                context.Response.ContentType = "application/xml";
+                await context.Response.WriteAsync(signedXml);
+
+                return;
             }
 
-            var xml = sb.ToString();
-            var signedXml = SignXml(xml, key);
-
-            return Content(signedXml, new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/xml"));
+            await _next(context);
         }
 
         private static string SignXml(string document, X509Certificate2 certificate)
@@ -113,4 +127,4 @@ namespace FederationGateway.Controllers
             return doc.OuterXml;
         }
     }
-}
+    }

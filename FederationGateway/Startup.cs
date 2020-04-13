@@ -60,18 +60,10 @@ namespace FederationGateway
                 AddCookieOptions(options, "federationgateway");
             });
 
-
-            services.AddSingleton<WsFederationMetadataSerializer>();
-            services.AddSingleton<WsTrustSerializer>();
-            services.AddSingleton<SamlResponseSerializer>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IKeyMaterialService>(new DefaultKeyMaterialService(certificate));
-            services.AddSingleton<IRelyingPartyStore>(new InMemoryRelyingPartyStore(Config.RelyingParties));
-            services.AddSingleton<IProfileManager>(new DefaultProfileManager());
-            services.AddScoped<ISignInSessionManager>(s => 
-                new DefaultSignInSessionManager(s.GetService<IHttpContextAccessor>(), "IdentityServer"));
-            services.AddSingleton<SignInResponseGenerator>();
-            services.Configure<FederationGatewayOptions>(options => Configuration.GetSection("IdentityServer").Bind(options));
+            services.AddInMemoryFederationGateway(Config.RelyingParties,
+                new DefaultProfileManager(),
+                certificate,
+                options => Configuration.GetSection("IdentityServer").Bind(options));
 
             services.AddControllersWithViews();
         }
@@ -94,14 +86,14 @@ namespace FederationGateway
 
             app.UseRouting();
 
-            app.UseMiddleware<P3PHeaderMiddleware>();
+            app.UseAuthentication();
+
+            app.UseFederationGateway();
 
             app.UseCookiePolicy(new CookiePolicyOptions
             {
                 MinimumSameSitePolicy = SameSiteMode.None,
             });
-
-            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {

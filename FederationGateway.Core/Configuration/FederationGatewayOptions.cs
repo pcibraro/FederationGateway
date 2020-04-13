@@ -12,5 +12,25 @@ namespace FederationGateway.Core.Configuration
         public int DefaultNotOnOrAfterInMinutes { get; set; }
 
         public int DefaultNotBeforeInMinutes { get; set; }
+
+        public Saml20Options Saml { get; set; }
+
+        public WsFederationOptions WsFed { get; set; }
     }
+
+    public class WsFederationOptions
+    {
+        public string CookieName { get; set; }
+
+        public string Endpoint { get; set; }
+    }
+
+    public class Saml20Options
+    {
+        public string CookieName { get; set; }
+
+        public string Endpoint { get; set; }
+    }
+
+
 }
