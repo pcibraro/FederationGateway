@@ -12,6 +12,11 @@ namespace FederationGateway.Core.Profiles
     {
         public Task<ClaimsIdentity> GetProfileAsync(SignInRequest request)
         {
+            if(!request.User.Identity.IsAuthenticated)
+            {
+                throw new SignInException("The user is not authenticated");
+            }
+
             return Task.FromResult(request.User.Identities.First());
         }
     }

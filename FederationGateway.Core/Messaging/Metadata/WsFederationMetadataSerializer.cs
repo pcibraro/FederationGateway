@@ -27,6 +27,12 @@ namespace FederationGateway.Core.Messaging.Metadata
             string wsFedUrl)
         {
 
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
+            if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id));
+            if (string.IsNullOrWhiteSpace(issuerName)) throw new ArgumentNullException(nameof(issuerName));
+            if (string.IsNullOrWhiteSpace(samlUrl)) throw new ArgumentNullException(nameof(samlUrl));
+            if (string.IsNullOrWhiteSpace(wsFedUrl)) throw new ArgumentNullException(nameof(wsFedUrl));
+
             var keyInfo = new KeyInfoX509Data(signingKey);
 
             keyInfo.AddIssuerSerial(signingKey.IssuerName.Name, signingKey.SerialNumber);

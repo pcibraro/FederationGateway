@@ -33,6 +33,12 @@ namespace FederationGateway.Core.Middleware
             SamlResponseSerializer serializer,
             IOptions<FederationGatewayOptions> options)
         {
+            if (next == null) throw new ArgumentNullException(nameof(next));
+            if (relyingPartyStore == null) throw new ArgumentNullException(nameof(relyingPartyStore));
+            if (responseGenerator == null) throw new ArgumentNullException(nameof(responseGenerator));
+            if (serializer == null) throw new ArgumentNullException(nameof(serializer));
+            if (options == null) throw new ArgumentNullException(nameof(options));
+
             _next = next;
             _logger = logger;
             _relyingPartyStore = relyingPartyStore;

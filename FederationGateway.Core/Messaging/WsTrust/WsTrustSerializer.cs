@@ -19,6 +19,9 @@ namespace FederationGateway.Core.Messaging.WsTrust
 
         public void Serialize(XmlWriter writer, WsTrustRequestSecurityTokenResponse response)
         {
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
+            if (response == null) throw new ArgumentNullException(nameof(response));
+
             writer.WriteStartElement("t", "RequestSecurityTokenResponse", WsTrust200502Namespace);
 
             WriteLifetime(writer, response.LifeTime);

@@ -21,6 +21,9 @@ namespace FederationGateway.Core.Messaging.SamlP
 
         public SamlRequestMessage(string id, string issuer, bool isSignIn)
         {
+            if (id == null) throw new ArgumentNullException(nameof(id));
+            if (issuer == null) throw new ArgumentNullException(nameof(issuer));
+
             this.Id = id;
             this.Issuer = issuer;
             this.IsSignInMessage = isSignIn;
@@ -29,6 +32,8 @@ namespace FederationGateway.Core.Messaging.SamlP
 
         public static SamlRequestMessage CreateFromEncodedRequest(string encodedRequest)
         {
+            if (string.IsNullOrWhiteSpace(encodedRequest)) throw new ArgumentNullException(nameof(encodedRequest));
+
             var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(encodedRequest));
 
             return ParseFromDecodedRequest(decoded);
@@ -36,6 +41,8 @@ namespace FederationGateway.Core.Messaging.SamlP
 
         public static SamlRequestMessage CreateFromCompressedRequest(string compressedRequest)
         {
+            if (string.IsNullOrWhiteSpace(compressedRequest)) throw new ArgumentNullException(nameof(compressedRequest));
+
             string decoded = null;
 
             using (var ms = new MemoryStream(Convert.FromBase64String(compressedRequest)))

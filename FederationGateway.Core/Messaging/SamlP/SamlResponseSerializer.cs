@@ -13,6 +13,9 @@ namespace FederationGateway.Core.Messaging.SamlP
 
         public void Serialize(XmlWriter writer, SamlResponseMessage response)
         {
+            if(writer == null) throw new ArgumentNullException(nameof(writer));
+            if(response == null) throw new ArgumentNullException(nameof(response));
+
             writer.WriteStartElement("samlp", response.ResponseType, SamlProtocolNamespace);
             writer.WriteAttributeString("IssueInstant", XmlConvert.ToString(DateTime.Now, XmlDateTimeSerializationMode.Utc));
             writer.WriteAttributeString("ID", "_" + response.Id);

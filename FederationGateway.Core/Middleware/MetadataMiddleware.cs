@@ -32,6 +32,11 @@ namespace FederationGateway.Core.Middleware
             IOptions<FederationGatewayOptions> options,
             WsFederationMetadataSerializer serializer)
         {
+            if (next == null) throw new ArgumentNullException(nameof(next));
+            if (keyService == null) throw new ArgumentNullException(nameof(keyService));
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (serializer == null) throw new ArgumentNullException(nameof(serializer));
+
             _next = next;
             _logger = logger;
             _keyService = keyService;

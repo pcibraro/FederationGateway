@@ -34,6 +34,11 @@ namespace FederationGateway.Core.ResponseProcessing
             IOptions<FederationGatewayOptions> options
             )
         {
+            if (relyingPartyStore == null) throw new ArgumentNullException(nameof(relyingPartyStore));
+            if (profileManager == null) throw new ArgumentNullException(nameof(profileManager));
+            if (keyService == null) throw new ArgumentNullException(nameof(keyService));
+            if (options == null) throw new ArgumentNullException(nameof(options));
+
             _logger = logger;
             _relyingPartyStore = relyingPartyStore;
             _profileManager = profileManager;
@@ -43,6 +48,8 @@ namespace FederationGateway.Core.ResponseProcessing
 
         public async Task<SignInResponse> GenerateSignInResponse(SignInRequest request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             _logger.LogDebug("Creating WS-Federation signin response");
 
             var rp = await _relyingPartyStore.FindRelyingPartyByRealm(request.Realm);

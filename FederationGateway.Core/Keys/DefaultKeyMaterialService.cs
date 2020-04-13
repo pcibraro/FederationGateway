@@ -13,6 +13,8 @@ namespace FederationGateway.Core.Keys
 
         public DefaultKeyMaterialService(X509Certificate2 signingCert)
         {
+            if (signingCert == null) throw new ArgumentNullException(nameof(signingCert));
+
             var key = new X509SecurityKey(signingCert);
 
             _credentials = new SigningCredentials(key, 

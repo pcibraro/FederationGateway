@@ -12,6 +12,8 @@ namespace FederationGateway.Core.Middleware
 
         public P3PHeaderMiddleware(RequestDelegate next)
         {
+            if (next == null) throw new ArgumentNullException(nameof(next));
+
             _next = next;
         }
 
