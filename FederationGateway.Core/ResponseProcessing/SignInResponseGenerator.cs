@@ -50,13 +50,15 @@ namespace FederationGateway.Core.ResponseProcessing
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            _logger.LogDebug("Creating WS-Federation signin response");
+            _logger.LogDebug("Creating signin response");
 
             var rp = await _relyingPartyStore.FindRelyingPartyByRealm(request.Realm);
 
             // create profile
+            _logger.LogDebug("Calling user profile manager");
             var outgoingSubject = await CreateUserProfileAsync(request);
 
+            _logger.LogDebug("Creating security token");
             // create token for user
             var token = await CreateSecurityTokenAsync(request, rp, outgoingSubject);
 
@@ -129,6 +131,8 @@ namespace FederationGateway.Core.ResponseProcessing
             var attributeStament = new Saml2AttributeStatement();
             foreach(var claim in outgoingSubject.Claims)
             {
+                _logger.LogDebug("Adding attribute in SAML token '{0} - {1}'", claim.Type, claim.Value);
+
                 attributeStament.Attributes.Add(new Saml2Attribute(claim.Type, claim.Value));
             }
 

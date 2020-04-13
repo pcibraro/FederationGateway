@@ -63,8 +63,12 @@ namespace FederationGateway.Core.Middleware
                     return;
                 }
 
+                _logger.LogInformation("Received SAML 2.0 Request. {0}", context.Request.QueryString.ToUriComponent());
+
                 if (!context.User.Identity.IsAuthenticated)
                 {
+                    _logger.LogInformation("User is not authenticated. Redirecting to authentication provider");
+
                     var qs = context.Request.QueryString;
                     var url = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{segment}/{context.Request.QueryString}";
 
@@ -78,13 +82,13 @@ namespace FederationGateway.Core.Middleware
 
                 if (!context.Request.Query.ContainsKey("SAMLRequest"))
                 {
+                    _logger.LogWarning("Invalid message. It does not contain SAMLRequest");
+
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     await context.Response.WriteAsync($"Invalid SAMLRequest Request Message");
 
                     return;
                 }
-
-                _logger.LogInformation("Received SAML 2.0 Request. {0}", context.Request.QueryString.ToUriComponent());
 
                 var samlRequest = context.Request.Query["SAMLRequest"];
 
@@ -92,10 +96,14 @@ namespace FederationGateway.Core.Middleware
 
                 if (context.Request.Method.Equals("GET", StringComparison.InvariantCultureIgnoreCase))
                 {
+                    _logger.LogWarning("Processing SAMLRequest from GET");
+
                     message = SamlRequestMessage.CreateFromCompressedRequest(samlRequest);
                 }
                 else
                 {
+                    _logger.LogWarning("Processing SAMLRequest from POST");
+
                     message = SamlRequestMessage.CreateFromEncodedRequest(samlRequest);
                 }
 
@@ -103,6 +111,8 @@ namespace FederationGateway.Core.Middleware
 
                 if (relyingParty == null)
                 {
+                    _logger.LogWarning("No relying party found for realm {0}", message.Issuer);
+
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     await context.Response.WriteAsync($"{message.Issuer} is not registered");
 
@@ -113,6 +123,8 @@ namespace FederationGateway.Core.Middleware
 
                 if (message.IsSignInMessage)
                 {
+                    _logger.LogWarning("Processing SAML Sign In for relying party with realm {0}", message.Issuer);
+
                     var output = await HandleSignIn(context,
                         message,
                         _options.IssuerName,
@@ -126,6 +138,8 @@ namespace FederationGateway.Core.Middleware
                 }
                 else
                 {
+                    _logger.LogWarning("Processing SAML Sign out for relying party with realm {0}", message.Issuer);
+
                     var output = HandleSignOut(context, message,
                         _options.IssuerName,
                         parameters,

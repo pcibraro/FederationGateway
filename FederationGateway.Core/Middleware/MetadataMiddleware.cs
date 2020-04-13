@@ -48,13 +48,20 @@ namespace FederationGateway.Core.Middleware
         {
             if (context.Request.Path.StartsWithSegments(new PathString("/metadata"), StringComparison.InvariantCultureIgnoreCase))
             {
+                _logger.LogInformation("Received metadata request");
+
                 var samlSegment = (string.IsNullOrWhiteSpace(_options?.Saml?.Endpoint)) ? "/Saml20" : "/" + _options?.Saml?.Endpoint;
                 var wsFedSegment = (string.IsNullOrWhiteSpace(_options?.WsFed?.Endpoint)) ? "/WsFed" : "/" + _options?.WsFed?.Endpoint;
 
                 var samlUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{samlSegment}/";
                 var wsFedUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{wsFedSegment}/";
 
+                _logger.LogInformation($"Using Saml Url {samlUrl} in Metadata request");
+                _logger.LogInformation($"Using WsFed Url {wsFedUrl} in Metadata request");
+
                 var key = ((await _keyService.GetSigningCredentialsAsync()).Key as X509SecurityKey).Certificate;
+
+                _logger.LogInformation($"Using Certificate Thumbprint {key.Thumbprint} in Metadata request");
 
                 var sb = new StringBuilder();
                 using (var xmlWriter = XmlWriter.Create(new StringWriter(sb)))
@@ -72,6 +79,8 @@ namespace FederationGateway.Core.Middleware
 
                 context.Response.ContentType = "application/xml";
                 await context.Response.WriteAsync(signedXml);
+
+                _logger.LogInformation("Metadata generated successfully");
 
                 return;
             }

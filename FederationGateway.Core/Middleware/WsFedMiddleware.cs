@@ -1,7 +1,6 @@
 ﻿using FederationGateway.Core.Messaging.WsTrust;
 using FederationGateway.Core.RelyingParties;
 using FederationGateway.Core.ResponseProcessing;
-using FederationGateway.Core.SessionManagers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
@@ -56,8 +55,12 @@ namespace FederationGateway.Core.Middleware
 
             if (context.Request.Path.StartsWithSegments(new PathString(segment), StringComparison.InvariantCultureIgnoreCase))
             {
+                _logger.LogInformation("Received WsFed Request. {0}", context.Request.QueryString.ToUriComponent());
+
                 if (!context.User.Identity.IsAuthenticated)
                 {
+                    _logger.LogInformation("User is not authenticated. Redirecting to authentication provider");
+
                     var qs = context.Request.QueryString;
                     var url = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{segment}/{context.Request.QueryString}";
 
@@ -77,21 +80,31 @@ namespace FederationGateway.Core.Middleware
 
                     if (relyingParty == null)
                     {
+                        _logger.LogWarning("No relying party found for realm {0}", message.Wtrealm);
+
                         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                         await context.Response.WriteAsync($"The realm { message.Wtrealm} is not registered");
                     }
+
+                    _logger.LogWarning("Processing WsFed Sign In for realm {0}", message.Wtrealm);
 
                     var output = await HandleSignIn(message, context, relyingParty.ReplyUrl);
 
                     context.Response.ContentType = "text/html";
                     await context.Response.WriteAsync(output);
+
+                    return;
                 }
                 else if (message.IsSignOutMessage)
                 {
+                    _logger.LogWarning("Processing WsFed Sign Out");
+
                     var output = await HandleSignOut(message, context);
 
                     context.Response.ContentType = "text/html";
                     await context.Response.WriteAsync(output);
+
+                    return;
                 }
 
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -133,6 +146,8 @@ namespace FederationGateway.Core.Middleware
                 _serializer.Serialize(xmlWriter, wsTrustResponse);
             }
 
+            _logger.LogInformation("Adding realm in session cookie {0}", message.Wtrealm);
+
             handler.AddRealm(context, message.Wtrealm);
 
             var wsResponse = new WsFederationMessage();
@@ -155,6 +170,8 @@ namespace FederationGateway.Core.Middleware
             var realms = handler.GetRealms(context);
             foreach (var realm in realms)
             {
+                _logger.LogInformation("Processing WsFed Signout for {0}", realm);
+
                 var endpoint = await _relyingPartyStore.FindRelyingPartyByRealm(realm);
                 if (endpoint.LogoutUrl != null)
                 {
