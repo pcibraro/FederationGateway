@@ -13,24 +13,25 @@ namespace FederationGateway.Core.Configuration
 
         public int DefaultNotBeforeInMinutes { get; set; }
 
-        public Saml20Options Saml { get; set; }
+        public string MetadataEndpoint { get; set; }
 
-        public WsFederationOptions WsFed { get; set; }
+        public string WsFedCookieName { get; set; }
+
+        public string WsFedEndpoint { get; set; }
+
+        public string Saml20CookieName { get; set; }
+
+        public string Saml20Endpoint { get; set; }
+
+        public FederationGatewayOptions()
+        {
+            MetadataEndpoint = "/metadata";
+
+            WsFedCookieName = "WsFedEndpoints";
+            WsFedEndpoint = "/wsfed";
+
+            Saml20CookieName = "Saml20Endpoints";
+            Saml20Endpoint = "/saml20";
+        }
     }
-
-    public class WsFederationOptions
-    {
-        public string CookieName { get; set; }
-
-        public string Endpoint { get; set; }
-    }
-
-    public class Saml20Options
-    {
-        public string CookieName { get; set; }
-
-        public string Endpoint { get; set; }
-    }
-
-
 }

@@ -82,7 +82,10 @@ namespace FederationGateway
 
             app.UseAuthentication();
 
-            app.UseFederationGateway();
+            var options = new FederationGatewayOptions();
+            Configuration.GetSection("IdentityServer").Bind(options);
+
+            app.UseFederationGateway(options);
 
             app.UseCookiePolicy(new CookiePolicyOptions
             {

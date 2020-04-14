@@ -15,9 +15,14 @@ namespace FederationGateway.Core.RelyingParties
             _relyingParties = relyingParties;
         }
 
-        public Task<RelyingParty> FindRelyingPartyByRealm(string realm)
+        public Task<RelyingParty> GetByRealm(string realm)
         {
             return Task.FromResult(_relyingParties.FirstOrDefault(r => r.Realm == realm));
+        }
+
+        public Task<IEnumerable<RelyingParty>> GetAll()
+        {
+            return Task.FromResult(_relyingParties);
         }
     }
 }

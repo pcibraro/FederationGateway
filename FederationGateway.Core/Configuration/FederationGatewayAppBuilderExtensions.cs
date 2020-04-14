@@ -8,12 +8,11 @@ namespace FederationGateway.Core.Configuration
 {
     public static class FederationGatewayAppBuilderExtensions
     {
-        public static IApplicationBuilder UseFederationGateway(this IApplicationBuilder app)
+        public static IApplicationBuilder UseFederationGateway(this IApplicationBuilder app, FederationGatewayOptions options)
         {
-            app.UseMiddleware<P3PHeaderMiddleware>();
-            app.UseMiddleware<MetadataMiddleware>();
-            app.UseMiddleware<WsFedMiddleware>();
-            app.UseMiddleware<Saml20Middleware>();
+            app.Map(options.MetadataEndpoint, builder => builder.UseMiddleware<MetadataMiddleware>());
+            app.Map(options.WsFedEndpoint, builder => builder.UseMiddleware<WsFedMiddleware>());
+            app.Map(options.Saml20Endpoint, builder => builder.UseMiddleware<Saml20Middleware>());
 
             return app;
         }

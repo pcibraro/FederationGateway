@@ -49,7 +49,7 @@ namespace FederationGateway.Core.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            var segment = (string.IsNullOrWhiteSpace(_options?.Saml?.Endpoint)) ? "/Saml20" : "/" + _options?.Saml?.Endpoint;
+            var segment = _options.Saml20Endpoint;
 
             if (context.Request.Path.StartsWithSegments(new PathString(segment), StringComparison.InvariantCultureIgnoreCase))
             {
@@ -131,7 +131,7 @@ namespace FederationGateway.Core.Middleware
                     message = SamlRequestMessage.CreateFromEncodedRequest(samlRequest);
                 }
 
-                var relyingParty = await _relyingPartyStore.FindRelyingPartyByRealm(message.Issuer);
+                var relyingParty = await _relyingPartyStore.GetByRealm(message.Issuer);
 
                 if (relyingParty == null)
                 {
@@ -265,8 +265,7 @@ namespace FederationGateway.Core.Middleware
 
         protected virtual SessionCookieHandler CreateSessionHandler()
         {
-            var cookieName = (string.IsNullOrWhiteSpace(_options?.Saml?.CookieName)) ? "Saml20Endpoints" : 
-                _options?.Saml?.CookieName;
+            var cookieName = _options.Saml20CookieName;
 
             return new SessionCookieHandler(cookieName);
         }

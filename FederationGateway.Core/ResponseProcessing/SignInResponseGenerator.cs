@@ -52,7 +52,7 @@ namespace FederationGateway.Core.ResponseProcessing
 
             _logger.LogDebug("Creating signin response");
 
-            var rp = await _relyingPartyStore.FindRelyingPartyByRealm(request.Realm);
+            var rp = await _relyingPartyStore.GetByRealm(request.Realm);
 
             // create profile
             _logger.LogDebug("Calling user profile manager");

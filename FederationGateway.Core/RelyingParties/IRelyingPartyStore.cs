@@ -7,6 +7,8 @@ namespace FederationGateway.Core.RelyingParties
 {
     public interface IRelyingPartyStore
     {
-        Task<RelyingParty> FindRelyingPartyByRealm(string realm);
+        Task<RelyingParty> GetByRealm(string realm);
+
+        Task<IEnumerable<RelyingParty>> GetAll();
     }
 }

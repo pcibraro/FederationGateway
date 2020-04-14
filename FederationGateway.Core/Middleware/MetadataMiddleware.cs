@@ -46,12 +46,12 @@ namespace FederationGateway.Core.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Path.StartsWithSegments(new PathString("/metadata"), StringComparison.InvariantCultureIgnoreCase))
+            if (context.Request.Path.StartsWithSegments(_options.MetadataEndpoint, StringComparison.InvariantCultureIgnoreCase))
             {
                 _logger.LogInformation("Received metadata request");
 
-                var samlSegment = (string.IsNullOrWhiteSpace(_options?.Saml?.Endpoint)) ? "/Saml20" : "/" + _options?.Saml?.Endpoint;
-                var wsFedSegment = (string.IsNullOrWhiteSpace(_options?.WsFed?.Endpoint)) ? "/WsFed" : "/" + _options?.WsFed?.Endpoint;
+                var samlSegment = _options.Saml20Endpoint;
+                var wsFedSegment = _options.WsFedEndpoint;
 
                 var samlUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{samlSegment}/";
                 var wsFedUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{wsFedSegment}/";

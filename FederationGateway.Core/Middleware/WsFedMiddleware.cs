@@ -51,7 +51,7 @@ namespace FederationGateway.Core.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            var segment = (string.IsNullOrWhiteSpace(_options?.WsFed?.Endpoint)) ? "/WsFed" : "/" + _options?.WsFed?.Endpoint;
+            var segment = _options.WsFedEndpoint;
 
             if (context.Request.Path.StartsWithSegments(new PathString(segment), StringComparison.InvariantCultureIgnoreCase))
             {
@@ -76,7 +76,7 @@ namespace FederationGateway.Core.Middleware
 
                 if (message.IsSignInMessage)
                 {
-                    var relyingParty = await _relyingPartyStore.FindRelyingPartyByRealm(message.Wtrealm);
+                    var relyingParty = await _relyingPartyStore.GetByRealm(message.Wtrealm);
 
                     if (relyingParty == null)
                     {
@@ -172,7 +172,7 @@ namespace FederationGateway.Core.Middleware
             {
                 _logger.LogInformation("Processing WsFed Signout for {0}", realm);
 
-                var endpoint = await _relyingPartyStore.FindRelyingPartyByRealm(realm);
+                var endpoint = await _relyingPartyStore.GetByRealm(realm);
                 if (endpoint.LogoutUrl != null)
                 {
                     var logoutUrl = endpoint.LogoutUrl;
@@ -219,8 +219,7 @@ namespace FederationGateway.Core.Middleware
 
         protected virtual SessionCookieHandler CreateSessionHandler()
         {
-            var cookieName = (string.IsNullOrWhiteSpace(_options?.WsFed?.CookieName)) ? "WsFedEndpoints" : 
-                _options?.WsFed?.CookieName;
+            var cookieName = _options.WsFedCookieName;
 
             return new SessionCookieHandler(cookieName);
         }

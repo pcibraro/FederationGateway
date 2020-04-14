@@ -66,6 +66,8 @@ namespace FederationGateway.Core.Middleware
                 HttpOnly = true,
                 SameSite = SameSiteMode.None
             });
+
+            context.Response.Headers.Add("P3P", "CP=\"NID DSP ALL COR\"");
         }
     }
 }
