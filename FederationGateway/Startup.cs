@@ -20,6 +20,7 @@ using FederationGateway.Core.Middleware;
 using System.Web;
 using FederationGateway.Core.Messaging.SamlP;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace FederationGateway
 {
@@ -54,6 +55,17 @@ namespace FederationGateway
             {
                 AddCookieOptions(options, "federationgateway");
             });
+
+            var authentication = services
+              .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+              .AddJwtBearer("Bearer", c =>
+              {
+                  c.Authority = Configuration["Bearer:Authority"];
+                  c.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                  {
+                      ValidAudiences = Configuration["Bearer:Audience"].Split(";")
+                  };
+              });
 
             services.AddInMemoryFederationGateway(Config.RelyingParties,
                 new DefaultProfileManager(),
@@ -98,6 +110,9 @@ namespace FederationGateway
             {
                 MinimumSameSitePolicy = SameSiteMode.None,
             });
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

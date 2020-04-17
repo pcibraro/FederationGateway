@@ -22,6 +22,7 @@ export function fetchRPs() {
         return window.msal.acquireTokenSilent({
             scopes: config.apiScopes
         }).then(response => {
+            console.log(response.accessToken);
             return fetch(config.managementApiUri + "/api/relyingparty", {
                 headers: {
                     "authorization": "bearer " + response.accessToken
