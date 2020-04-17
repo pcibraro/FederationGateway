@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FederationGateway.Core.RelyingParties
+namespace FederationGateway.Providers.RelyingParties
 {
     public interface IRelyingPartyStore
     {

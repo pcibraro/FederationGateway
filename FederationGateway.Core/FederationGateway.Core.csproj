@@ -17,4 +17,12 @@
     <PackageReference Include="System.Security.Cryptography.Xml" Version="4.7.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FederationGateway.Providers\FederationGateway.Providers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="RelyingParties\" />
+  </ItemGroup>
+
 </Project>

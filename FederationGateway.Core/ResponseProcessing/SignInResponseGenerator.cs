@@ -1,21 +1,14 @@
-﻿using FederationGateway.Core;
-using FederationGateway.Core.Profiles;
-using FederationGateway.Core.RelyingParties;
-using FederationGateway.Core.Keys;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Tokens.Saml2;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using FederationGateway.Core.Messaging.WsTrust;
-using System.Text;
-using System.Xml;
-using System.IO;
 using FederationGateway.Core.Configuration;
+using FederationGateway.Providers.RelyingParties;
+using FederationGateway.Providers.Profiles;
+using FederationGateway.Providers.Keys;
 
 namespace FederationGateway.Core.ResponseProcessing
 {

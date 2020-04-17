@@ -2,8 +2,10 @@
 using FederationGateway.Core.Keys;
 using FederationGateway.Core.Messaging.WsTrust;
 using FederationGateway.Core.Profiles;
-using FederationGateway.Core.RelyingParties;
 using FederationGateway.Core.ResponseProcessing;
+using FederationGateway.Providers.Keys;
+using FederationGateway.Providers.Profiles;
+using FederationGateway.Providers.RelyingParties;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -69,7 +71,7 @@ namespace FederationGateway.Tests
                 _options
                 );
 
-            var response = await responseGenerator.GenerateSignInResponse(new Core.ResponseProcessing.SignInRequest
+            var response = await responseGenerator.GenerateSignInResponse(new SignInRequest
             {
                 Realm = "urn:test",
                 User = new ClaimsPrincipal(new List<ClaimsIdentity>
@@ -97,7 +99,7 @@ namespace FederationGateway.Tests
                 _options
                 );
 
-            var response = await responseGenerator.GenerateSignInResponse(new Core.ResponseProcessing.SignInRequest
+            var response = await responseGenerator.GenerateSignInResponse(new SignInRequest
             {
                 Realm = "urn:test",
                 User = new ClaimsPrincipal(new List<ClaimsIdentity>

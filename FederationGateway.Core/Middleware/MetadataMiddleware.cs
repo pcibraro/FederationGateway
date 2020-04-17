@@ -1,6 +1,7 @@
 ﻿using FederationGateway.Core.Configuration;
 using FederationGateway.Core.Keys;
 using FederationGateway.Core.Messaging.Metadata;
+using FederationGateway.Providers.Keys;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

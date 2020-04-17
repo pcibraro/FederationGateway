@@ -3,8 +3,10 @@ using FederationGateway.Core.Messaging.Metadata;
 using FederationGateway.Core.Messaging.SamlP;
 using FederationGateway.Core.Messaging.WsTrust;
 using FederationGateway.Core.Profiles;
-using FederationGateway.Core.RelyingParties;
 using FederationGateway.Core.ResponseProcessing;
+using FederationGateway.Providers.Keys;
+using FederationGateway.Providers.Profiles;
+using FederationGateway.Providers.RelyingParties;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -15,20 +17,9 @@ namespace FederationGateway.Core.Configuration
 {
     public static class FederationGatewayConfigurationExtensions
     {
-        public static IServiceCollection AddInMemoryFederationGateway(this IServiceCollection services, 
-            IEnumerable<RelyingParty> relyingParties,
+        public static IServiceCollection AddFederationGateway(this IServiceCollection services,
             IProfileManager profileManager,
-            X509Certificate2 issuerCert,
-            Action<FederationGatewayOptions> options)
-        {
-            services.AddCommonServices(profileManager, issuerCert, options);
-            services.AddSingleton<IRelyingPartyStore>(new InMemoryRelyingPartyStore(relyingParties));
-
-            return services;
-        }
-
-        private static IServiceCollection AddCommonServices(this IServiceCollection services,
-            IProfileManager profileManager,
+            IRelyingPartyStore relyingPartyStore,
             X509Certificate2 issuerCert,
             Action<FederationGatewayOptions> options)
         {
@@ -37,6 +28,7 @@ namespace FederationGateway.Core.Configuration
             services.AddSingleton<SamlResponseSerializer>();
             services.AddSingleton<IKeyMaterialService>(new DefaultKeyMaterialService(issuerCert));
             services.AddSingleton<IProfileManager>(profileManager);
+            services.AddSingleton<IRelyingPartyStore>(relyingPartyStore);
             services.AddSingleton<SignInResponseGenerator>();
             services.Configure<FederationGatewayOptions>(options);
 

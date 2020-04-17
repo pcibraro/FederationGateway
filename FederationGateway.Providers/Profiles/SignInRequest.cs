@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
 
-namespace FederationGateway.Core.ResponseProcessing
+namespace FederationGateway.Providers.Profiles
 {
     public class SignInRequest
     {

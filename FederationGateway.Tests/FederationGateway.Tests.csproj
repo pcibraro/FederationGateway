@@ -15,6 +15,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FederationGateway.Core\FederationGateway.Core.csproj" />
+    <ProjectReference Include="..\FederationGateway.InMemoryRelyingParty\FederationGateway.InMemoryRelyingParty.csproj" />
+    <ProjectReference Include="..\FederationGateway.Providers\FederationGateway.Providers.csproj" />
     <ProjectReference Include="..\FederationGateway\FederationGateway.csproj" />
   </ItemGroup>
 

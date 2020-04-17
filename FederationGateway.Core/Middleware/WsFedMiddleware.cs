@@ -1,5 +1,4 @@
 ﻿using FederationGateway.Core.Messaging.WsTrust;
-using FederationGateway.Core.RelyingParties;
 using FederationGateway.Core.ResponseProcessing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication;
@@ -16,6 +15,8 @@ using System.IO;
 using System.Linq;
 using FederationGateway.Core.Configuration;
 using Microsoft.Extensions.Options;
+using FederationGateway.Providers.RelyingParties;
+using FederationGateway.Providers.Profiles;
 
 namespace FederationGateway.Core.Middleware
 {

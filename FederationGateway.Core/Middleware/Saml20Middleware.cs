@@ -1,6 +1,5 @@
 ﻿using FederationGateway.Core.Configuration;
 using FederationGateway.Core.Messaging.SamlP;
-using FederationGateway.Core.RelyingParties;
 using FederationGateway.Core.ResponseProcessing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +13,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Xml;
 using System.IO;
+using FederationGateway.Providers.RelyingParties;
+using FederationGateway.Providers.Profiles;
 
 namespace FederationGateway.Core.Middleware
 {

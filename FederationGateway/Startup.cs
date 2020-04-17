@@ -21,6 +21,7 @@ using System.Web;
 using FederationGateway.Core.Messaging.SamlP;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using FederationGateway.Providers.RelyingParties;
 
 namespace FederationGateway
 {
@@ -67,8 +68,9 @@ namespace FederationGateway
                   };
               });
 
-            services.AddInMemoryFederationGateway(Config.RelyingParties,
+            services.AddFederationGateway(
                 new DefaultProfileManager(),
+                new InMemoryRelyingPartyStore(Config.RelyingParties),
                 certificate,
                 options => Configuration.GetSection("IdentityServer").Bind(options));
 

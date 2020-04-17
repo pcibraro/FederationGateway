@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 
-namespace FederationGateway.Core.RelyingParties
+namespace FederationGateway.Providers.RelyingParties
 {
     public class InMemoryRelyingPartyStore : IRelyingPartyStore
     {

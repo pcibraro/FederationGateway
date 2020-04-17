@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FederationGateway.Core.Keys
+namespace FederationGateway.Providers.Keys
 {
     public interface IKeyMaterialService
     {

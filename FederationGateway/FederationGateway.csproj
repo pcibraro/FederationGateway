@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FederationGateway.Core\FederationGateway.Core.csproj" />
+    <ProjectReference Include="..\FederationGateway.InMemoryRelyingParty\FederationGateway.InMemoryRelyingParty.csproj" />
   </ItemGroup>
 
   <ItemGroup>

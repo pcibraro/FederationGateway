@@ -1,4 +1,4 @@
-﻿using FederationGateway.Core.RelyingParties;
+﻿using FederationGateway.Providers.RelyingParties;
 using System;
 using System.Collections.Generic;
 using System.Linq;

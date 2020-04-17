@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
-using FederationGateway.Core.ResponseProcessing;
+using FederationGateway.Providers.Profiles;
 
 namespace FederationGateway.Core.Profiles
 {

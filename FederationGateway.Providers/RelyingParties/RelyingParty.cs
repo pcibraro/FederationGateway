@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FederationGateway.Core.RelyingParties
+namespace FederationGateway.Providers.RelyingParties
 {
     public class RelyingParty
     {
