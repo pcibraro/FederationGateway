@@ -56,6 +56,26 @@ namespace FederationGateway.ManagementApi.Controllers
         [Route("{id}")]
         public async Task<IActionResult> Update(RelyingParty relyingParty)
         {
+            if(relyingParty == null)
+            {
+                return BadRequest();
+            }
+
+            if(string.IsNullOrWhiteSpace(relyingParty.Realm))
+            {
+                return BadRequest("Realm is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(relyingParty.Name))
+            {
+                return BadRequest("Name is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(relyingParty.ReplyUrl))
+            {
+                return BadRequest("Reply Url is required");
+            }
+
             var updated = await _relyingPartyStore.Update(relyingParty);
 
             return Ok(updated);
@@ -64,6 +84,26 @@ namespace FederationGateway.ManagementApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(RelyingParty relyingParty)
         {
+            if (relyingParty == null)
+            {
+                return BadRequest();
+            }
+
+            if (string.IsNullOrWhiteSpace(relyingParty.Realm))
+            {
+                return BadRequest("Realm is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(relyingParty.Name))
+            {
+                return BadRequest("Name is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(relyingParty.ReplyUrl))
+            {
+                return BadRequest("Reply Url is required");
+            }
+
             var updated = await _relyingPartyStore.Create(relyingParty);
             
             return Ok(updated);
