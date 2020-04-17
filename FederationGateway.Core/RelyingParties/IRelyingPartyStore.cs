@@ -10,5 +10,13 @@ namespace FederationGateway.Core.RelyingParties
         Task<RelyingParty> GetByRealm(string realm);
 
         Task<IEnumerable<RelyingParty>> GetAll();
+
+        Task<RelyingParty> GetById(string id);
+
+        Task<RelyingParty> Update(RelyingParty relyingParty);
+
+        Task<RelyingParty> Create(RelyingParty relyingParty);
+
+        Task Delete(string id);
     }
 }

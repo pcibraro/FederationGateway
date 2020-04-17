@@ -25,22 +25,46 @@ namespace FederationGateway.ManagementApi.Controllers
         }
 
         [HttpGet]
-        public JsonResult Get()
+        public async Task<IActionResult> Get()
         {
-            var relyingParties = _relyingPartyStore.GetAll();
-
-            return new JsonResult(relyingParties);
-            
+            var relyingParties = await _relyingPartyStore.GetAll();
+            return Ok(relyingParties);
         }
 
         [HttpGet]
-        [Route("{realm}")]
-        public JsonResult Get(string realm)
+        [Route("{id}")]
+        public async Task<IActionResult> Get(string id)
         {
-            var relyingParties = _relyingPartyStore.GetByRealm(realm);
+            var relyingParty = await _relyingPartyStore.GetById(id);
 
-            return new JsonResult(relyingParties);
+            return Ok(relyingParty);
 
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            await _relyingPartyStore.Delete(id);
+
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<IActionResult> Update(RelyingParty relyingParty)
+        {
+            var updated = await _relyingPartyStore.Update(relyingParty);
+
+            return Ok(updated);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(RelyingParty relyingParty)
+        {
+            var updated = await _relyingPartyStore.Create(relyingParty);
+            
+            return Ok(updated);
         }
 
 

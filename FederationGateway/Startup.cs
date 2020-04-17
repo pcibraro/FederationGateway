@@ -19,6 +19,7 @@ using FederationGateway.Core.Configuration;
 using FederationGateway.Core.Middleware;
 using System.Web;
 using FederationGateway.Core.Messaging.SamlP;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FederationGateway
 {
@@ -59,7 +60,7 @@ namespace FederationGateway
                 certificate,
                 options => Configuration.GetSection("IdentityServer").Bind(options));
 
-            services.AddControllersWithViews();
+            services.AddControllers().AddNewtonsoftJson();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,8 +85,14 @@ namespace FederationGateway
 
             var options = new FederationGatewayOptions();
             Configuration.GetSection("IdentityServer").Bind(options);
-
             app.UseFederationGateway(options);
+
+            app.UseCors(cfg =>
+            {
+                cfg.AllowAnyOrigin();
+                cfg.AllowAnyMethod();
+                cfg.AllowAnyHeader();
+            });
 
             app.UseCookiePolicy(new CookiePolicyOptions
             {
