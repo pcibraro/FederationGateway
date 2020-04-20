@@ -51,6 +51,7 @@ namespace FederationGateway.Core.Middleware
         public async Task Invoke(HttpContext context)
         {
             var segment = _options.Saml20Endpoint;
+            var idpInitiatedSegment = $"{segment}/idpinitiated";
 
             if (context.Request.Path.StartsWithSegments(new PathString(segment), StringComparison.InvariantCultureIgnoreCase))
             {
@@ -66,7 +67,19 @@ namespace FederationGateway.Core.Middleware
 
                 _logger.LogInformation("Received SAML 2.0 Request. {0}", context.Request.QueryString.ToUriComponent());
 
-                if (!context.Request.Query.ContainsKey("SAMLRequest"))
+                if(context.Request.Path.StartsWithSegments(idpInitiatedSegment))
+                {
+                    if(!context.Request.Query.ContainsKey("realm"))
+                    {
+                        _logger.LogWarning("Invalid message. IDP Initiated with no realm");
+
+                        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        await context.Response.WriteAsync($"Invalid message. IDP Initiated with no realm");
+
+                        return;
+                    }
+                }
+                else if (!context.Request.Query.ContainsKey("SAMLRequest"))
                 {
                     _logger.LogWarning("Invalid message. It does not contain SAMLRequest");
 
@@ -114,22 +127,31 @@ namespace FederationGateway.Core.Middleware
                     }
                 }
 
-
-                var samlRequest = context.Request.Query["SAMLRequest"];
-
                 SamlRequestMessage message = null;
 
-                if (context.Request.Method.Equals("GET", StringComparison.InvariantCultureIgnoreCase))
+                if (context.Request.Path.StartsWithSegments(idpInitiatedSegment))
                 {
-                    _logger.LogWarning("Processing SAMLRequest from GET");
-
-                    message = SamlRequestMessage.CreateFromCompressedRequest(samlRequest);
+                    message = new SamlRequestMessage(
+                        Guid.NewGuid().ToString(),
+                        context.Request.Query["realm"],
+                        true);
                 }
                 else
                 {
-                    _logger.LogWarning("Processing SAMLRequest from POST");
+                    var samlRequest = context.Request.Query["SAMLRequest"];
 
-                    message = SamlRequestMessage.CreateFromEncodedRequest(samlRequest);
+                    if (context.Request.Method.Equals("GET", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        _logger.LogWarning("Processing SAMLRequest from GET");
+
+                        message = SamlRequestMessage.CreateFromCompressedRequest(samlRequest);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Processing SAMLRequest from POST");
+
+                        message = SamlRequestMessage.CreateFromEncodedRequest(samlRequest);
+                    }
                 }
 
                 var relyingParty = await _relyingPartyStore.GetByRealm(message.Issuer);

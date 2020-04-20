@@ -30,6 +30,7 @@ namespace FederationGateway.Core.Messaging.SamlP
             this.IsSignOutMessage = !isSignIn;
         }
 
+
         public static SamlRequestMessage CreateFromEncodedRequest(string encodedRequest)
         {
             if (string.IsNullOrWhiteSpace(encodedRequest)) throw new ArgumentNullException(nameof(encodedRequest));
