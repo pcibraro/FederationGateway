@@ -20,8 +20,8 @@ Write-Host "Restoring project" -ForegroundColor Green
 & dotnet restore $solution --verbosity m
 
 # Publish the project
-Write-Host "Publishing project" -ForegroundColor Green
-& dotnet publish $solution
+#Write-Host "Publishing project" -ForegroundColor Green
+#& dotnet publish $solution
 
 # Discover and run tests
 #Write-Host "Running tests" -ForegroundColor Green
