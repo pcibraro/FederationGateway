@@ -44,8 +44,8 @@ cd $buildDir
 Write-Host "Saving Artifacts" -ForegroundColor Green
 $artifacts = Get-ChildItem -Path $ouputDir
 foreach($artifact in $artifacts) {
-    Write-Host "Pushing $artifact";
-    Push-AppveyorArtifact $artifact
+    Write-Host "Pushing $ouputDir\$artifact";
+    Push-AppveyorArtifact "$ouputDir\$artifact"
 }
 
 # Publish package to NuGet
