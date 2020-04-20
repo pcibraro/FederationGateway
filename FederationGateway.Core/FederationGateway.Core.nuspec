@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>FederationGateway.Core</id>
+    <version>1.0.0-beta</version>
+    <title>FederationGateway.Core</title>
+    <authors>Pablo Cibraro</authors>
+    <owners>Pablo Cibraro</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/pcibraro/FederationGateway</projectUrl>
+    <description>Core middleware for implementing a WSFed and SAML Identity Provider in .NET Core</description>
+    <releaseNotes>Middleware for WsFed and SAML 2.0 Identity Providers</releaseNotes>
+    <copyright>Copyright 2020</copyright>
+    <tags>WsFed SAML</tags>
+  </metadata>
+</package>

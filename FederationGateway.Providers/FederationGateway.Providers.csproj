@@ -8,4 +8,10 @@
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.5.0" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <NuspecFile>FederationGateway.Providers.nuspec</NuspecFile>
+    <IncludeSymbols>true</IncludeSymbols>
+  </PropertyGroup>
+  
 </Project>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>FederationGateway.Providers</id>
+    <version>1.0.0-beta</version>
+    <title>FederationGateway.Providers</title>
+    <authors>Pablo Cibraro</authors>
+    <owners>Pablo Cibraro</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/pcibraro/FederationGateway</projectUrl>
+    <description>Base clases for the providers used by the Federation Gateway middleware</description>
+    <releaseNotes>Middleware for WsFed and SAML 2.0 Identity Providers</releaseNotes>
+    <copyright>Copyright 2020</copyright>
+    <tags>WsFed SAML</tags>
+  </metadata>
+</package>

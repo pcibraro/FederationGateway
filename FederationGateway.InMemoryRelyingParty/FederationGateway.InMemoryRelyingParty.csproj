@@ -8,4 +8,10 @@
     <ProjectReference Include="..\FederationGateway.Providers\FederationGateway.Providers.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <NuspecFile>FederationGateway.InMemoryRelyingParty.nuspec</NuspecFile>
+    <IncludeSymbols>true</IncludeSymbols>
+  </PropertyGroup>
+  
 </Project>
