@@ -109,6 +109,5 @@ namespace FederationGateway.ManagementApi.Controllers
             return Ok(updated);
         }
 
-
     }
 }

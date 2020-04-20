@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FederationGateway.Providers
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FederationGateway.InMemoryRelyingParty", "FederationGateway.InMemoryRelyingParty\FederationGateway.InMemoryRelyingParty.csproj", "{0D34AE39-322D-4C77-864D-B7EE1E46CA66}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FederationGateway.MongoRelyingParty", "FederationGateway.MongoRelyingParty\FederationGateway.MongoRelyingParty.csproj", "{54594A74-5CCA-497A-9BA3-7F4308B0E8C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{0D34AE39-322D-4C77-864D-B7EE1E46CA66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D34AE39-322D-4C77-864D-B7EE1E46CA66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D34AE39-322D-4C77-864D-B7EE1E46CA66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54594A74-5CCA-497A-9BA3-7F4308B0E8C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54594A74-5CCA-497A-9BA3-7F4308B0E8C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54594A74-5CCA-497A-9BA3-7F4308B0E8C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54594A74-5CCA-497A-9BA3-7F4308B0E8C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
