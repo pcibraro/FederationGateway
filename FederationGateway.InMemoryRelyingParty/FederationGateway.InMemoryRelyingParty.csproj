@@ -2,16 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FederationGateway.Providers\FederationGateway.Providers.csproj" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <NoPackageAnalysis>true</NoPackageAnalysis>
-    <NuspecFile>FederationGateway.InMemoryRelyingParty.nuspec</NuspecFile>
-    <IncludeSymbols>true</IncludeSymbols>
-  </PropertyGroup>
-  
 </Project>

@@ -13,8 +13,9 @@
     <releaseNotes>Middleware for WsFed and SAML 2.0 Identity Providers</releaseNotes>
     <copyright>Copyright 2020</copyright>
     <tags>WsFed SAML</tags>
-    <dependencies>
-      <group targetFramework="netstandard2.1" />
-    </dependencies>
+    
   </metadata>
+  <!--<files>
+    <file src=".\bin\Release\netstandard2.0\FederationGateway.Core.dll" target="lib\netstandard2.0" />
+  </files>-->
 </package>
