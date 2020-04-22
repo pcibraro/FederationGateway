@@ -24,16 +24,16 @@ Write-Host "Restoring project" -ForegroundColor Green
 #& dotnet publish $solution
 
 # Discover and run tests
-#Write-Host "Running tests" -ForegroundColor Green
-#cd $testDir
-#$testOutput = & dotnet test | Out-String
-#Write-Host $testOutput
+Write-Host "Running tests" -ForegroundColor Green
+cd $testDir
+$testOutput = & dotnet test | Out-String
+Write-Host $testOutput
 
 # Ensure that the tests passed
-#if ($testOutput.Contains("Test Run Successful.") -eq $False) {
-#  Write-Host "Build failed!";
-#  Exit;
-#}
+if ($testOutput.Contains("Test Run Successful.") -eq $False) {
+  Write-Host "Build failed!";
+  Exit;
+}
 
 # Generate a NuGet package for publishing
 Write-Host "Generating NuGet Package" -ForegroundColor Green

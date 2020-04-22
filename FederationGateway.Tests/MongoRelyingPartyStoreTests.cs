@@ -10,6 +10,7 @@ using Xunit;
 
 namespace FederationGateway.Tests
 {
+    
     public class MongoRelyingPartyStoreTests
     {
         private readonly MongoRelyingPartyStore _store;
@@ -27,7 +28,7 @@ namespace FederationGateway.Tests
             _store = new MongoRelyingPartyStore(options);
         }
 
-        [Fact]
+        [Fact(Skip = "Integration Test Only")]
         public async Task ShouldInsertRelyingParty()
         {
             var updated = await _store.Create(new RelyingParty
@@ -42,7 +43,7 @@ namespace FederationGateway.Tests
             Assert.NotNull(updated.Id);
         }
 
-        [Fact]
+        [Fact(Skip = "Integration Test Only")]
         public async Task ShouldUpdateAndGetRelyingParty()
         {
             var inserted = await _store.Create(new RelyingParty
@@ -71,7 +72,7 @@ namespace FederationGateway.Tests
             Assert.Equal(90, updated.TokenLifetimeInMinutes);
         }
 
-        [Fact]
+        [Fact(Skip = "Integration Test Only")]
         public async Task ShouldGetRelyingPartyByRealm()
         {
             var inserted = await _store.Create(new RelyingParty

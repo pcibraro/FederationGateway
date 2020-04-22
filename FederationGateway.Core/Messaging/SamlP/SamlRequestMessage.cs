@@ -19,28 +19,31 @@ namespace FederationGateway.Core.Messaging.SamlP
 
         public string Id { get; private set; }
 
-        public SamlRequestMessage(string id, string issuer, bool isSignIn)
+        public string RelayState { get; private set; }
+
+        public SamlRequestMessage(string id, string issuer, string relayState, bool isSignIn)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (issuer == null) throw new ArgumentNullException(nameof(issuer));
 
             this.Id = id;
             this.Issuer = issuer;
+            this.RelayState = relayState;
             this.IsSignInMessage = isSignIn;
             this.IsSignOutMessage = !isSignIn;
         }
 
 
-        public static SamlRequestMessage CreateFromEncodedRequest(string encodedRequest)
+        public static SamlRequestMessage CreateFromEncodedRequest(string encodedRequest, string relayState)
         {
             if (string.IsNullOrWhiteSpace(encodedRequest)) throw new ArgumentNullException(nameof(encodedRequest));
 
             var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(encodedRequest));
 
-            return ParseFromDecodedRequest(decoded);
+            return ParseFromDecodedRequest(decoded, relayState);
         }
 
-        public static SamlRequestMessage CreateFromCompressedRequest(string compressedRequest)
+        public static SamlRequestMessage CreateFromCompressedRequest(string compressedRequest, string relayState)
         {
             if (string.IsNullOrWhiteSpace(compressedRequest)) throw new ArgumentNullException(nameof(compressedRequest));
 
@@ -53,7 +56,7 @@ namespace FederationGateway.Core.Messaging.SamlP
                 decoded = sr.ReadToEnd();
             }
 
-            return ParseFromDecodedRequest(decoded);
+            return ParseFromDecodedRequest(decoded, relayState);
         }
 
         public static string CompressRequest(string request)
@@ -72,7 +75,7 @@ namespace FederationGateway.Core.Messaging.SamlP
             }
         }
 
-        private static SamlRequestMessage ParseFromDecodedRequest(string decodedRequest)
+        private static SamlRequestMessage ParseFromDecodedRequest(string decodedRequest, string relayState)
         {
             var document = XElement.Parse(decodedRequest);
 
@@ -80,7 +83,7 @@ namespace FederationGateway.Core.Messaging.SamlP
             var issuer = document.Descendants(XName.Get("Issuer", "urn:oasis:names:tc:SAML:2.0:assertion")).FirstOrDefault();
             var id = document.Attribute("ID").Value;
 
-            var message = new SamlRequestMessage(id, issuer?.Value, !isLogout);
+            var message = new SamlRequestMessage(id, issuer?.Value, relayState, !isLogout);
 
             return message;
         }

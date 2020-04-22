@@ -21,14 +21,6 @@ namespace FederationGateway
                         Realm = "urn:test",
                         ReplyUrl = "https://localhost:44384/wsfed",
                         LogoutUrl = "https://localhost:44384/wsfed"
-                    },
-                    new RelyingParty
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        Realm = "google.com/a/jmfamily.com",
-                        Name = "test2",
-                        ReplyUrl = "https://localhost:44384/wsfed",
-                        LogoutUrl = "https://localhost:44384/wsfed"
                     }
                 };
             }

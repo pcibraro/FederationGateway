@@ -15,6 +15,7 @@ using System.Xml;
 using System.IO;
 using FederationGateway.Providers.RelyingParties;
 using FederationGateway.Providers.Profiles;
+using System.Web;
 
 namespace FederationGateway.Core.Middleware
 {
@@ -79,7 +80,8 @@ namespace FederationGateway.Core.Middleware
                         return;
                     }
                 }
-                else if (!context.Request.Query.ContainsKey("SAMLRequest"))
+                else if ((context.Request.Method == "GET" && !context.Request.Query.ContainsKey("SAMLRequest")) ||
+                     (context.Request.Method == "POST" && !context.Request.Form.ContainsKey("SAMLRequest")))
                 {
                     _logger.LogWarning("Invalid message. It does not contain SAMLRequest");
 
@@ -89,44 +91,6 @@ namespace FederationGateway.Core.Middleware
                     return;
                 }
 
-                if (!context.User.Identity.IsAuthenticated)
-                {
-                    _logger.LogInformation("User is not authenticated. Redirecting to authentication provider");
-
-                    if (context.Request.Method.Equals("GET", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        var qs = context.Request.QueryString;
-                        var url = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{segment}/{context.Request.QueryString}";
-
-                        await context.ChallengeAsync(new AuthenticationProperties
-                        {
-                            RedirectUri = url
-                        });
-
-                        return;
-                    }
-                    else
-                    {
-                        // Converts the POST Request into a GET so the message can be passed as context to the IDP and 
-                        // it can be recovered after the user is authenticated
-                        var compressedRequest = SamlRequestMessage.CompressRequest(context.Request.Query["SAMLRequest"]);
-                        var qs = string.Join("&", context.Request.Query.Where(q => q.Key != "SAMLRequest")
-                            .Select(q => q.Key + "=" + q.Value[0]));
-
-                        qs = "SAMLRequest=" + compressedRequest + "&" + qs;
-
-                        var url = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{segment}/{qs}";
-
-                        await context.ChallengeAsync(new AuthenticationProperties
-                        {
-                            RedirectUri = url
-                        });
-
-                        return;
-
-                    }
-                }
-
                 SamlRequestMessage message = null;
 
                 if (context.Request.Path.StartsWithSegments(idpInitiatedSegment))
@@ -134,24 +98,44 @@ namespace FederationGateway.Core.Middleware
                     message = new SamlRequestMessage(
                         Guid.NewGuid().ToString(),
                         context.Request.Query["realm"],
+                        context.Request.Query["relayState"],
                         true);
                 }
                 else
                 {
-                    var samlRequest = context.Request.Query["SAMLRequest"];
+                    
 
                     if (context.Request.Method.Equals("GET", StringComparison.InvariantCultureIgnoreCase))
                     {
+                        var samlRequest = context.Request.Query["SAMLRequest"];
+
                         _logger.LogWarning("Processing SAMLRequest from GET");
 
-                        message = SamlRequestMessage.CreateFromCompressedRequest(samlRequest);
+                        message = SamlRequestMessage.CreateFromCompressedRequest(samlRequest, context.Request.Query["relayState"]);
                     }
                     else
                     {
+                        var samlRequest = context.Request.Form["SAMLRequest"];
+
                         _logger.LogWarning("Processing SAMLRequest from POST");
 
-                        message = SamlRequestMessage.CreateFromEncodedRequest(samlRequest);
+                        message = SamlRequestMessage.CreateFromEncodedRequest(samlRequest, context.Request.Form["relayState"]);
                     }
+                }
+
+                if (!context.User.Identity.IsAuthenticated)
+                {
+                    _logger.LogInformation("User is not authenticated. Redirecting to authentication provider");
+                    
+                    var qs = context.Request.QueryString;
+                    var url = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{idpInitiatedSegment}/?realm={message.Issuer}&relayState={message.RelayState}";
+
+                    await context.ChallengeAsync(new AuthenticationProperties
+                    {
+                        RedirectUri = url
+                    });
+
+                    return;
                 }
 
                 var relyingParty = await _relyingPartyStore.GetByRealm(message.Issuer);
@@ -223,7 +207,7 @@ namespace FederationGateway.Core.Middleware
             var samlResponse = new SamlResponseMessage();
             samlResponse.Token = response.Token;
             samlResponse.Id = Guid.NewGuid().ToString();
-            samlResponse.InResponseTo = message.Id;
+            samlResponse.InResponseTo = (!string.IsNullOrWhiteSpace(message.Id)) ? message.Id : Guid.NewGuid().ToString();
             samlResponse.ReplyTo = new Uri(replyUrl);
             samlResponse.Issuer = issuer;
             samlResponse.ResponseType = "Response";
@@ -234,9 +218,7 @@ namespace FederationGateway.Core.Middleware
                 _serializer.Serialize(xmlWriter, samlResponse);
             }
 
-            var relayState = (parameters.ContainsKey("RelayState") ? parameters["RelayState"] : "");
-
-            var form = BuildSignInFormPost(replyUrl, sb.ToString(), relayState);
+            var form = BuildSignInFormPost(replyUrl, sb.ToString(), message.RelayState);
 
             return form;
         }

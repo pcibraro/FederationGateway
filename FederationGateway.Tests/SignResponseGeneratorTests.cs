@@ -78,7 +78,7 @@ namespace FederationGateway.Tests
                     new ClaimsIdentity(new List<Claim>
                     {
                         new Claim(ClaimTypes.NameIdentifier, "john foo")
-                    })
+                    }, "federated")
                 }),
                 Parameters = new Dictionary<string, string>()
                 {
