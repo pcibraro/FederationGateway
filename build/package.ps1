@@ -49,10 +49,11 @@ foreach($artifact in $artifacts) {
 }
 
 # Publish package to NuGet
+Write-Host "Publishing NuGet package" -ForegroundColor Green
+
 $artifacts = Get-ChildItem -Path $ouputDir
 foreach($artifact in $artifacts) {
-    Write-Host "Publishing NuGet package" -ForegroundColor Green
-	& nuget push $ouputDir\$artifact" -ApiKey $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package
+    nuget push $ouputDir\$artifact" -ApiKey $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package
 }
 
 # Done
