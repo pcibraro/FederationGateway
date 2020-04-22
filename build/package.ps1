@@ -38,7 +38,7 @@ if ($testOutput.Contains("Test Run Successful.") -eq $False) {
 # Generate a NuGet package for publishing
 Write-Host "Generating NuGet Package" -ForegroundColor Green
 cd $buildDir
-& dotnet pack -c Release /p:PackageVersion=$buildNumber -o $ouputDir
+& dotnet pack -c Release /p:PackageVersion="$($buildNumber)-beta" -o $ouputDir
 
 # Save generated artifacts
 Write-Host "Saving Artifacts" -ForegroundColor Green
