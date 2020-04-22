@@ -49,8 +49,8 @@ foreach($artifact in $artifacts) {
 }
 
 # Publish package to NuGet
-#Write-Host "Publishing NuGet package" -ForegroundColor Green
-#& nuget push $nugetFile -ApiKey $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package
+Write-Host "Publishing NuGet package" -ForegroundColor Green
+& nuget push $nugetFile -ApiKey $env:NUGET_API_KEY -Source https://www.nuget.org/api/v2/package
 
 # Done
 Write-Host "Done!" -ForegroundColor Green
